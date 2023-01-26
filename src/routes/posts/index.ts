@@ -18,8 +18,13 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
       },
     },
     async function (request, reply): Promise<PostEntity> {
-      const id = request.params.id;
-      return await fastify.db.posts.findOne({key:'id',equals:id}) as PostEntity;
+      const post = await fastify.db.posts.findOne({key:'id',equals: request.params.id});
+      if (!post) {
+        reply.statusCode = 404;
+        throw new Error("Not Found!");
+      }
+      
+      return post;
     }
   );
 
@@ -31,6 +36,12 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
       },
     },
     async function (request, reply): Promise<PostEntity> {
+      const author = await fastify.db.users.findOne({key:'id',equals: request.body.userId});
+      if (!author) {
+        reply.statusCode = 400;
+        throw new Error("Bad request!");
+      }
+      
       return await fastify.db.posts.create(request.body);
     }
   );
@@ -43,7 +54,12 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
       },
     },
     async function (request, reply): Promise<PostEntity> {
-      return await fastify.db.posts.delete(request.params.id);
+      const post = await fastify.db.posts.findOne({key:'id',equals: request.params.id});
+      if (!post) {
+        reply.statusCode = 400;
+        throw new Error("Post not found!");
+      }
+      return await fastify.db.posts.delete(post.id);
     }
   );
 
@@ -56,7 +72,13 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
       },
     },
     async function (request, reply): Promise<PostEntity> {
-      return await fastify.db.posts.change(request.params.id, request.body);
+      const post = await fastify.db.posts.findOne({key:'id', equals: request.params.id});
+      if (!post) {
+        reply.statusCode = 400;
+        throw new Error("Post not found!");
+      }
+      
+      return await fastify.db.posts.change(post.id, request.body);
     }
   );
 };
