@@ -133,3 +133,15 @@ export const CreatePostType = new GraphQLInputObjectType({
     userId: { type: new GraphQLNonNull(GraphQLID) },  
   })
 });
+
+// UPDATE TYPES TASKS 2.12-2.17
+
+export const UpdateUserType = new GraphQLInputObjectType({
+  name: 'UpdateUserType',
+  fields: () => ({
+      id: { type: new GraphQLNonNull(GraphQLID) },
+      firstName: { type: GraphQLString },
+      lastName: { type: GraphQLString },
+      email: { type: GraphQLString }
+  }),
+})

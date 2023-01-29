@@ -272,9 +272,33 @@ If the properties of the entity are not specified, then return the id of it.
 
    2.11. [InputObjectType](https://graphql.org/graphql-js/type/#graphqlinputobjecttype) for DTOs.  
 
-   
+
    * Update gql requests:  
-   2.12. Update user.  
+   2.12. Update user.
+   ```
+   mutation updateUser($user: UpdateUserType!){
+    updateUser(user: $user)
+    {
+        id
+        firstName
+        lastName
+        email
+        subscribedToUserIds 
+    }
+   }
+   ```
+   update user VARIABLES
+   ```
+   {
+	   "user": {
+         "id": "COPY FROM CREATED USER",
+         "firstName": "ira new",
+         "lastName": "ira new",
+         "email": "ira@gmail.com"
+	   }
+   }
+   ```
+
    2.13. Update profile.  
    2.14. Update post.  
    2.15. Update memberType.  
