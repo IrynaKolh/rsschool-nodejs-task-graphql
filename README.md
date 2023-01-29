@@ -2,6 +2,7 @@
 ### Tasks:
 1. Add logic to the restful endpoints (users, posts, profiles, member-types folders in ./src/routes).  
    1.1. npm run test - 100%  
+
    create new user
    ```
    {
@@ -15,22 +16,23 @@
    {
     "title": "ira",
     "content": "post",
-    "userId": "0b3b7923-caeb-405c-8b1e-55fb6143ec13"
+    "userId": "copy from DB"
    }
    ```
    create new profle
    ```
-  {  
+   {  
    "avatar": "IronMan",
     "sex": "men",
     "birthday": "01011985",
     "country": "USA",
     "street": "5 Avenue",
     "city": "NY",
-    "userId": "0b3b7923-caeb-405c-8b1e-55fb6143ec13",
+    "userId": "copy from DB",
     "memberTypeId": "basic"
    }
    ```
+
 2. Add logic to the graphql endpoint (graphql folder in ./src/routes).  
 Constraints and logic for gql queries should be done based on restful implementation.  
 For each subtask provide an example of POST body in the PR.  
@@ -41,7 +43,8 @@ If the properties of the entity are not specified, then return the id of it.
    
    * Get gql requests:  
    2.1. Get users, profiles, posts, memberTypes - 4 operations in one query.  
-   ```{
+   ```
+   {
     users {
       id
       firstName
@@ -70,10 +73,46 @@ If the properties of the entity are not specified, then return the id of it.
       discount
       monthPostsLimit
     }
-}
-```
+   }
+   ```
 
-   2.2. Get user, profile, post, memberType by id - 4 operations in one query.  
+   2.2. Get user, profile, post, memberType by id - 4 operations in one query. 
+   ```
+   {
+   user(id: "copy from DB") {
+      id
+      firstName
+      lastName
+      email
+   }
+
+   profile(id:  "copy from DB") {
+      id
+      avatar
+      sex
+      birthday
+      country
+      street
+      city
+      userId
+      memberTypeId
+   }
+
+   post(id:  "copy from DB") {
+      id
+      title
+      content
+      userId
+   }
+
+   memberType(id: "basic") {
+      id
+      discount
+      monthPostsLimit
+   }
+   }
+   ```
+
    2.3. Get users with their posts, profiles, memberTypes.  
    2.4. Get user by id with his posts, profile, memberType.  
    2.5. Get users with their `userSubscribedTo`, profile.  

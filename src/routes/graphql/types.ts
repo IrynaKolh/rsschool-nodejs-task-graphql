@@ -38,7 +38,7 @@ export const ProfileType = new GraphQLObjectType({
     street: { type: new GraphQLNonNull(GraphQLString) },
     city: { type: new GraphQLNonNull(GraphQLString) },
     userId: { type: new GraphQLNonNull(GraphQLID) },
-    memberTypeId: { type: new GraphQLNonNull(GraphQLString) },
+    memberTypeId: { type: new GraphQLNonNull(GraphQLID) },
   })
 });
 

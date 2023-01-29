@@ -5,7 +5,6 @@ import {
   GraphQLID,
   GraphQLList,
   GraphQLNonNull,
-  GraphQLString,
   GraphQLSchema,
 } from 'graphql/type';
 import { MemberType, PostType, ProfileType, UserType } from './types';
@@ -88,13 +87,13 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
             },
             memberType: {
               type: MemberType,
-              args: { id: { type: new GraphQLNonNull(GraphQLString) } },
+              args: { id: { type: new GraphQLNonNull(GraphQLID) } },
               async resolve(parent, args) {
-                const memberType = await fastify.db.memberTypes.findOne(args.id);
+                const memberType = await fastify.db.memberTypes.findOne({key:'id', equals: args.id});
                   if (!memberType) {
                     throw fastify.httpErrors.notFound("Member type not found");
                   }
-                  return memberType;
+                  return memberType;                  
               }
             },          
           }
