@@ -11,19 +11,7 @@
     "userId": "copy from DB"
    }
    ```
-   create new profle
-   ```
-   {  
-   "avatar": "IronMan",
-    "sex": "men",
-    "birthday": "01011985",
-    "country": "USA",
-    "street": "5 Avenue",
-    "city": "NY",
-    "userId": "copy from DB",
-    "memberTypeId": "basic"
-   }
-   ```
+  
    subscribeTo (create 2 users, 1 user id - path: localhost:3000/users/FIRST_USER_ID/subscribeTo)
    ```
     {
@@ -233,6 +221,38 @@ If the properties of the entity are not specified, then return the id of it.
    ```
 
    2.9. Create profile.  
+   ```
+   mutation createProfile($profile: CreateProfileType!){
+    createProfile(profile: $profile)
+    {
+        id
+        avatar
+        sex
+        birthday
+        country
+        street
+        city
+        memberTypeId
+        userId
+    }
+   }
+   ```
+   create new profle VARIABLES
+   ```
+   {
+    "profile": {
+      "avatar": "IronMan",
+      "sex": "men",
+      "birthday": 45,
+      "country": "USA",
+      "street": "5 Avenue",
+      "city": "NY",
+      "userId": "COPY FROM CREATED USER",   
+      "memberTypeId": "basic"
+      }
+   }
+   ```
+
    2.10. Create post.  
    2.11. [InputObjectType](https://graphql.org/graphql-js/type/#graphqlinputobjecttype) for DTOs.  
    * Update gql requests:  
