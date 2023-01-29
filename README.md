@@ -114,7 +114,63 @@ If the properties of the entity are not specified, then return the id of it.
    ```
 
    2.3. Get users with their posts, profiles, memberTypes.  
+   ```
+      {
+      users {
+         id
+         firstName
+         lastName
+         posts {
+            id
+            title
+            content
+         }
+         memberType{
+            id
+         }
+         profile{
+            id
+            avatar
+            sex
+            birthday
+            country
+            street
+            city
+            userId
+            memberTypeId
+         }
+      }
+   }
+   ```
    2.4. Get user by id with his posts, profile, memberType.  
+   ```
+   {
+      user(id: "9aac3ea5-fa6b-42c5-8f07-541305ce8fa8") {        
+         firstName
+         lastName
+         posts {
+            id
+            title
+            content
+         }
+         memberType{
+            id
+         }
+         profile{
+            id
+            avatar
+            sex
+            birthday
+            country
+            street
+            city
+            userId
+            memberTypeId
+         }
+      }
+   }
+   ```
+   
    2.5. Get users with their `userSubscribedTo`, profile.  
    2.6. Get user by id with his `subscribedToUser`, posts.  
    2.7. Get users with their `userSubscribedTo`, `subscribedToUser` (additionally for each user in `userSubscribedTo`, `subscribedToUser` add their `userSubscribedTo`, `subscribedToUser`).  
