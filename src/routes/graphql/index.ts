@@ -7,7 +7,7 @@ import {
   GraphQLNonNull,
   GraphQLSchema,
 } from 'graphql/type';
-import { MemberType, PostType, ProfileType, UserType } from './types';
+import { CreateUserType, MemberType, PostType, ProfileType, UserType } from './types';
 import { graphql } from 'graphql';
 
 const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
@@ -97,6 +97,18 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
               }
             },          
           }
+        }),
+        mutation: new GraphQLObjectType({
+          name: 'RootMutation',
+          fields: {
+            createUser: {
+              type: UserType,
+              args:{ user: {type: CreateUserType}  },
+              async resolve(parent, args) {                             
+                return await fastify.db.users.create(args.user);
+              }
+            }
+          }
         })
       }) 
     
@@ -104,6 +116,7 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
       return await graphql({ 
         schema, 
         source: query,
+        variableValues: request.body.variables, 
         contextValue: fastify
        });
     }

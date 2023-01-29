@@ -3,14 +3,6 @@
 1. Add logic to the restful endpoints (users, posts, profiles, member-types folders in ./src/routes).  
    1.1. npm run test - 100%  
 
-   create new user
-   ```
-   {
-   "firstName": "ira",
-   "lastName": "ira",
-   "email": "ira@gmail.com"
-    }
-   ```
    create new post
    ```
    {
@@ -30,6 +22,15 @@
     "city": "NY",
     "userId": "copy from DB",
     "memberTypeId": "basic"
+   }
+   ```
+   subscribeTo (create 2 users, 1 user id - path: localhost:3000/users/FIRST_USER_ID/subscribeTo)
+   ```
+    {
+   "firstName": "olya",
+   "lastName": "olya",
+   "email": "olya@gmail.com",
+    "userId": ["SECOND_USER_ID"]
    }
    ```
 
@@ -171,11 +172,66 @@ If the properties of the entity are not specified, then return the id of it.
    }
    ```
    
-   2.5. Get users with their `userSubscribedTo`, profile.  
+   2.5. Get users with their `userSubscribedTo`, profile.  7e571d44-c41d-407d-b4c7-afc7c56eef0e
+   ```
+   {
+   users {
+      id
+      firstName
+      lastName
+      email
+      subscribedToUserIds
+      userSubscribedTo {
+            id
+            firstName
+            lastName
+            email
+            subscribedToUserIds
+      }
+      profile {
+            id
+            avatar
+            birthday
+            city
+            country
+            memberType{
+               id
+               discount
+               monthPostsLimit
+            }
+            street
+            userId
+         }
+      }
+   }
+   ```
+
    2.6. Get user by id with his `subscribedToUser`, posts.  
    2.7. Get users with their `userSubscribedTo`, `subscribedToUser` (additionally for each user in `userSubscribedTo`, `subscribedToUser` add their `userSubscribedTo`, `subscribedToUser`).  
    * Create gql requests:   
    2.8. Create user.  
+   ```
+   mutation CreateUser($user: CreateUserType!) {
+      createUser(user: $user) {
+         id,
+         firstName,
+         lastName,
+         email,
+         subscribedToUserIds
+      }
+   }
+   ```
+    create new user VARIABLES
+   ```
+   {
+    "user": {
+        "firstName": "ira",
+         "lastName": "ira",
+         "email": "ira@gmail.com"
+      }
+   }  
+   ```
+
    2.9. Create profile.  
    2.10. Create post.  
    2.11. [InputObjectType](https://graphql.org/graphql-js/type/#graphqlinputobjecttype) for DTOs.  

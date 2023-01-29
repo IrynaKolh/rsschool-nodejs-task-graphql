@@ -1,5 +1,6 @@
 import {
   GraphQLID,
+  GraphQLInputObjectType,
   GraphQLInt,
   GraphQLList,
   GraphQLNonNull,
@@ -83,5 +84,26 @@ export const UserType = new GraphQLObjectType({
        }
     },
     subscribedToUserIds: { type: new GraphQLList(GraphQLID) },
+    // userSubscribedTo: {
+    //   type: new GraphQLList(GraphQLID),
+    //   async resolve(parent, args, fastify) {
+    //     return fastify.db.users.findMany({key: 'id', equals: parent.subscribedToUserIds});        
+    //   }
+    // },
+    // subscribedToUser: {
+    //   type: new GraphQLList(GraphQLID),
+    //   async resolve(parent, args, fastify) {
+    //     return fastify.db.users.findMany({key: 'subscribedToUserIds', inArray: parent.id });     
+    //   }
+    // }
   })
 });
+
+export const CreateUserType = new GraphQLInputObjectType({
+  name: 'CreateUserType',
+  fields: {
+    firstName: { type: new GraphQLNonNull(GraphQLString) },
+    lastName: { type: new GraphQLNonNull(GraphQLString) },
+    email: { type: new GraphQLNonNull(GraphQLString) }
+  }
+})
