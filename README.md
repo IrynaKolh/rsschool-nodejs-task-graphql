@@ -3,14 +3,8 @@
 1. Add logic to the restful endpoints (users, posts, profiles, member-types folders in ./src/routes).  
    1.1. npm run test - 100%  
 
-   create new post
-   ```
-   {
-    "title": "ira",
-    "content": "post",
-    "userId": "copy from DB"
-   }
-   ```
+ 
+ 
   
    subscribeTo (create 2 users, 1 user id - path: localhost:3000/users/FIRST_USER_ID/subscribeTo)
    ```
@@ -68,14 +62,14 @@ If the properties of the entity are not specified, then return the id of it.
    2.2. Get user, profile, post, memberType by id - 4 operations in one query. 
    ```
    {
-   user(id: "copy from DB") {
+   user(id: "COPY FROM CREATED USER") {
       id
       firstName
       lastName
       email
    }
 
-   profile(id:  "copy from DB") {
+   profile(id:  "COPY FROM CREATED PROFILE") {
       id
       avatar
       sex
@@ -87,7 +81,7 @@ If the properties of the entity are not specified, then return the id of it.
       memberTypeId
    }
 
-   post(id:  "copy from DB") {
+   post(id:  "COPY FROM CREATED POST") {
       id
       title
       content
@@ -134,7 +128,7 @@ If the properties of the entity are not specified, then return the id of it.
    2.4. Get user by id with his posts, profile, memberType.  
    ```
    {
-      user(id: "9aac3ea5-fa6b-42c5-8f07-541305ce8fa8") {        
+      user(id: "COPY FROM CREATED USER") {        
          firstName
          lastName
          posts {
@@ -254,7 +248,31 @@ If the properties of the entity are not specified, then return the id of it.
    ```
 
    2.10. Create post.  
+   ```
+   mutation createPost($post: CreatePostType!){
+    createPost(post: $post)
+    {
+        id
+        title
+        content
+        userId
+    }
+   }
+   ```
+  create new post VARIABLES
+   ```
+   {
+	"post": {
+               "title": "ira",
+               "content": "post",
+               "userId": "COPY FROM CREATED USER"
+	   }
+   }
+   ```
+
    2.11. [InputObjectType](https://graphql.org/graphql-js/type/#graphqlinputobjecttype) for DTOs.  
+
+   
    * Update gql requests:  
    2.12. Update user.  
    2.13. Update profile.  

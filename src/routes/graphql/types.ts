@@ -8,6 +8,7 @@ import {
   GraphQLString
 } from 'graphql';
 
+//  QUERY TYPES TASKS 2.1-2.7
 
 export const MemberType = new GraphQLObjectType({
   name: 'Member',
@@ -99,18 +100,20 @@ export const UserType = new GraphQLObjectType({
   })
 });
 
+// CREATE TYPES TASKS 2.8-2.11
+
 export const CreateUserType = new GraphQLInputObjectType({
   name: 'CreateUserType',
-  fields: {
+  fields: () => ({
     firstName: { type: new GraphQLNonNull(GraphQLString) },
     lastName: { type: new GraphQLNonNull(GraphQLString) },
     email: { type: new GraphQLNonNull(GraphQLString) }
-  }
-})
+  })
+});
 
 export const CreateProfileType = new GraphQLInputObjectType({
   name: 'CreateProfileType',
-  fields: {
+  fields: () => ({
     avatar: { type: new GraphQLNonNull(GraphQLString) },
     sex: { type: new GraphQLNonNull(GraphQLString) },
     birthday: { type: new GraphQLNonNull(GraphQLInt) },
@@ -119,5 +122,14 @@ export const CreateProfileType = new GraphQLInputObjectType({
     city: { type: new GraphQLNonNull(GraphQLString) },
     userId: { type: new GraphQLNonNull(GraphQLID) },
     memberTypeId: { type: new GraphQLNonNull(GraphQLID) },
-  }
-})
+  })
+});
+
+export const CreatePostType = new GraphQLInputObjectType({
+  name: 'CreatePostType',
+  fields: () => ({
+    title: { type: new GraphQLNonNull(GraphQLString) },
+    content: { type: new GraphQLNonNull(GraphQLString) },
+    userId: { type: new GraphQLNonNull(GraphQLID) },  
+  })
+});

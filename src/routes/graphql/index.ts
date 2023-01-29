@@ -7,7 +7,7 @@ import {
   GraphQLNonNull,
   GraphQLSchema,
 } from 'graphql/type';
-import { CreateProfileType, CreateUserType, MemberType, PostType, ProfileType, UserType } from './types';
+import { CreatePostType, CreateProfileType, CreateUserType, MemberType, PostType, ProfileType, UserType } from './types';
 import { graphql } from 'graphql';
 
 const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
@@ -113,6 +113,13 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
               args: { profile: { type: CreateProfileType} },
               async resolve(parent, args) {
                 return await fastify.db.profiles.create(args.profile);
+              }
+            },
+            createPost: {
+              type: PostType,
+              args: { post: { type: CreatePostType } },
+              async resolve(parent, args) {
+                return await fastify.db.posts.create(args.post);             
               }
             }
           }
