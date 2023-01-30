@@ -7,7 +7,7 @@ import {
   GraphQLNonNull,
   GraphQLSchema,
 } from 'graphql/type';
-import { CreatePostType, CreateProfileType, CreateUserType, MemberType, PostType, ProfileType, UpdateProfileType, UpdateUserType, UserType } from './types';
+import { CreatePostType, CreateProfileType, CreateUserType, MemberType, PostType, ProfileType, UpdatePostType, UpdateProfileType, UpdateUserType, UserType } from './types';
 import { graphql } from 'graphql';
 
 const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
@@ -103,28 +103,28 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
           fields: {
             createUser: {
               type: UserType,
-              args:{ user: {type: CreateUserType } },
+              args:{ user: {type: new GraphQLNonNull(CreateUserType) } },
               async resolve(parent, args) {                             
                 return await fastify.db.users.create(args.user);
               }
             },
             createProfile: {
               type: ProfileType,
-              args: { profile: { type: CreateProfileType} },
+              args: { profile: { type: new GraphQLNonNull(CreateProfileType)} },
               async resolve(parent, args) {
                 return await fastify.db.profiles.create(args.profile);
               }
             },
             createPost: {
               type: PostType,
-              args: { post: { type: CreatePostType } },
+              args: { post: { type: new GraphQLNonNull(CreatePostType) } },
               async resolve(parent, args) {
                 return await fastify.db.posts.create(args.post);             
               }
             },
             updateUser:{
               type: UserType,
-              args: { user: { type: UpdateUserType } },
+              args: { user: { type: new GraphQLNonNull(UpdateUserType) } },
               async resolve(parent, args) {                             
                 try {
                   const { id, ...body } = args.user;
@@ -136,7 +136,7 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
             },
             updateProfile: {
               type: ProfileType,
-              args: { profile: { type: UpdateProfileType } },
+              args: { profile: { type: new GraphQLNonNull(UpdateProfileType) } },
               async resolve(parent, args) {                             
                 try {
                   const { id, ...body } = args.profile;
@@ -146,6 +146,18 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
                 }
               }
             },
+            updatePost: {
+              type: PostType,
+              args: { post: { type: new GraphQLNonNull(UpdatePostType) }              },
+              async resolve(parent, args) {
+                try {
+                  const { id, ...body } = args.post;
+                  return await fastify.db.posts.change(id, body);
+                } catch (err) {
+                  throw fastify.httpErrors.badRequest("Bad request!");
+                }
+              }
+            }
           }
         })
       }) 

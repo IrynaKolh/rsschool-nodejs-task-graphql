@@ -160,3 +160,12 @@ export const UpdateProfileType = new GraphQLInputObjectType({
     userId: { type: GraphQLString }
   })
 });
+
+export const UpdatePostType = new GraphQLInputObjectType({
+  name: 'UpdatePostType',
+  fields: () => ({
+    id: { type: new GraphQLNonNull(GraphQLString) },
+    title: { type: new GraphQLNonNull(GraphQLString) },
+    content: { type: new GraphQLNonNull(GraphQLString) }      
+  })
+});
