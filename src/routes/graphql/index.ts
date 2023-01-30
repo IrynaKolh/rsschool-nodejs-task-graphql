@@ -7,7 +7,7 @@ import {
   GraphQLNonNull,
   GraphQLSchema,
 } from 'graphql/type';
-import { CreatePostType, CreateProfileType, CreateUserType, MemberType, PostType, ProfileType, UpdateUserType, UserType } from './types';
+import { CreatePostType, CreateProfileType, CreateUserType, MemberType, PostType, ProfileType, UpdateProfileType, UpdateUserType, UserType } from './types';
 import { graphql } from 'graphql';
 
 const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
@@ -130,10 +130,22 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
                   const { id, ...body } = args.user;
                   return await fastify.db.users.change(id, body);
                 } catch (err) {
-                  throw fastify.httpErrors.badRequest();
+                  throw fastify.httpErrors.badRequest("Bad request!");
                 }
               }
-            }
+            },
+            updateProfile: {
+              type: ProfileType,
+              args: { profile: { type: UpdateProfileType } },
+              async resolve(parent, args) {                             
+                try {
+                  const { id, ...body } = args.profile;
+                  return await fastify.db.profiles.change(id, body);
+                } catch (err) {
+                  throw fastify.httpErrors.badRequest("Bad request!");
+                }
+              }
+            },
           }
         })
       }) 

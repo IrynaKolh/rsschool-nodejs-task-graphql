@@ -300,6 +300,39 @@ If the properties of the entity are not specified, then return the id of it.
    ```
 
    2.13. Update profile.  
+   ```
+   mutation updateProfile($profile: UpdateProfileType!){
+    updateProfile(profile: $profile)
+    {
+        id
+        avatar
+        sex
+        birthday
+        country
+        street
+        city
+        memberTypeId
+        userId
+    }
+   }
+   ```
+   update profile VARIABLES
+   ```
+   {
+	"profile": {
+              "id": "COPY FROM CREATED PROFILE",
+              "avatar": "Spider Man",
+              "sex": "men",
+              "birthday": 27,
+              "country": "USA",
+              "street": "Richmond",
+              "city": "Los Angeles",
+              "memberTypeId": "business",
+              "userId": "COPY FROM CREATED USER"
+	   }
+   }
+   ```
+
    2.14. Update post.  
    2.15. Update memberType.  
    2.16. Subscribe to; unsubscribe from.  
