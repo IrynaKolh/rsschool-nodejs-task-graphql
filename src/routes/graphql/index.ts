@@ -7,7 +7,7 @@ import {
   GraphQLNonNull,
   GraphQLSchema,
 } from 'graphql/type';
-import { CreatePostType, CreateProfileType, CreateUserType, MemberType, PostType, ProfileType, UpdateMemberType, UpdatePostType, UpdateProfileType, UpdateUserType, userSubscribedToType, UserType } from './types';
+import { CreatePostType, CreateProfileType, CreateUserType, MemberType, PostType, ProfileType, unsubscribeFromType, UpdateMemberType, UpdatePostType, UpdateProfileType, UpdateUserType, userSubscribedToType, UserType } from './types';
 import { graphql } from 'graphql';
 
 const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
@@ -112,6 +112,13 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
               type: ProfileType,
               args: { profile: { type: new GraphQLNonNull(CreateProfileType)} },
               async resolve(parent, args) {
+                if (await fastify.db.profiles.findOne({key:'userId', equals: args.profile.userId})) {
+                  throw fastify.httpErrors.badRequest("Profile has already exist!");
+                }
+          
+                if (!(await fastify.db.memberTypes.findOne({ key: 'id', equals: args.profile.memberTypeId }))) {
+                  throw fastify.httpErrors.badRequest('Member Type does not exists');
+                }
                 return await fastify.db.profiles.create(args.profile);
               }
             },
@@ -175,19 +182,49 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
               args: { subscriber: { type: userSubscribedToType }},
               async resolve(parent, args) {
                 const { userId, subscriberId } = args.subscriber;
-                const user = await fastify.db.users.findOne({ key: 'id', equals: userId });
-                const subscriber = await fastify.db.users.findOne({ key: 'id', equals: subscriberId });
+                const users = await fastify.db.users.findMany({key: 'id', equalsAnyOf: [userId, subscriberId]});
+                const user = users.find((user) => user.id === userId);
+                const subscriber = users.find((user) => user.id === subscriberId);
                 if (!user || !subscriber) {
-                  throw fastify.httpErrors.notFound("User or subscriber not found!");
+                  throw fastify.httpErrors.notFound("User or subscriber not found!")
                 }
-                try {
-                  await fastify.db.users.change(user.id, {
-                    subscribedToUserIds: [...user.subscribedToUserIds, subscriber.id]
-                  })
-                  return user;
-                } catch (error) {
-                  throw fastify.httpErrors.badRequest("Bad request!");
+                subscriber.subscribedToUserIds.push(user.id);
+                return fastify.db.users.change(subscriber.id, {subscribedToUserIds: subscriber.subscribedToUserIds});
+                // const user = await fastify.db.users.findOne({ key: 'id', equals: userId });
+                // const subscriber = await fastify.db.users.findOne({ key: 'id', equals: subscriberId });
+                // if (!user || !subscriber) {
+                //   throw fastify.httpErrors.notFound("User or subscriber not found!");
+                // }
+                // try {
+                //   await fastify.db.users.change(user.id, {
+                //     subscribedToUserIds: [...user.subscribedToUserIds, subscriber.id]
+                //   })
+                //   return user;
+                // } catch (error) {
+                //   throw fastify.httpErrors.badRequest("Bad request!");
+                // }
+              }
+            },
+            unsubscribeFromUser: {
+              type: UserType,
+              args: { subscriber: { type: unsubscribeFromType }},
+              async resolve(parent, args) {
+                const { userId, unsubscriberId } = args.subscriber;
+                // const users = await fastify.db.users.findMany({key: 'id', equalsAnyOf: [userId, unsubscriberId]});
+                // const user = users.find((user) => user.id === userId);
+                // const unsubscriber = users.find((user) => user.id === unsubscriberId);
+                const user = await fastify.db.users.findOne({ key: 'id', equals: userId});
+                const unsubscriber = await fastify.db.users.findOne({ key: 'id', equals: unsubscriberId})
+
+                if (!user || !unsubscriber) {
+                  throw fastify.httpErrors.notFound("User or subscriber not found!")
                 }
+                const subscriberIndex = unsubscriber.subscribedToUserIds.findIndex((id) => id === user.id);
+                if (subscriberIndex === -1) {
+                  throw fastify.httpErrors.notFound("Subscriber not found!")
+                };
+                unsubscriber.subscribedToUserIds.splice(subscriberIndex, 1);
+                return fastify.db.users.change(unsubscriber.id, {subscribedToUserIds: unsubscriber.subscribedToUserIds});
               }
             }
           }

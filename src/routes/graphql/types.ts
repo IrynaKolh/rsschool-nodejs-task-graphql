@@ -93,12 +93,12 @@ UserType = new GraphQLObjectType({
         return fastify.db.users.findMany({ key: 'subscribedToUserIds', inArray: parent.id });        
       }
     },
-    // subscribedToUser: {
-    //   type: new GraphQLList(GraphQLID),
-    //   async resolve(parent, args, fastify) {
-    //     return fastify.db.users.findMany({key: 'subscribedToUserIds', inArray: parent.id });     
-    //   }
-    // }
+    subscribedToUser: {
+      type: new GraphQLList(UserType),
+      async resolve(parent, args, fastify) {
+        return fastify.db.users.findMany({ key: 'id', equalsAnyOf: parent.subscribedToUserIds });     
+      }
+    }
   })
 });
 
@@ -186,5 +186,13 @@ export const  userSubscribedToType = new GraphQLInputObjectType({
   fields: () => ({
     userId: { type: new GraphQLNonNull(GraphQLID) },
     subscriberId: { type: new GraphQLNonNull(GraphQLID)  },
+  })
+});
+
+export const unsubscribeFromType = new GraphQLInputObjectType({
+  name: 'unsubscribeFromType',
+  fields: () => ({
+    userId: { type: new GraphQLNonNull(GraphQLID) },
+    unsubscriberId: { type: new GraphQLNonNull(GraphQLID) },
   })
 })

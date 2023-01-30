@@ -3,19 +3,6 @@
 1. Add logic to the restful endpoints (users, posts, profiles, member-types folders in ./src/routes).  
    1.1. npm run test - 100%  
 
- 
- 
-  
-   subscribeTo (create 2 users, 1 user id - path: localhost:3000/users/FIRST_USER_ID/subscribeTo)
-   ```
-    {
-   "firstName": "olya",
-   "lastName": "olya",
-   "email": "olya@gmail.com",
-    "userId": ["SECOND_USER_ID"]
-   }
-   ```
-
 2. Add logic to the graphql endpoint (graphql folder in ./src/routes).  
 Constraints and logic for gql queries should be done based on restful implementation.  
 For each subtask provide an example of POST body in the PR.  
@@ -154,7 +141,7 @@ If the properties of the entity are not specified, then return the id of it.
    }
    ```
    
-   2.5. Get users with their `userSubscribedTo`, profile.  7e571d44-c41d-407d-b4c7-afc7c56eef0e
+   2.5. Get users with their `userSubscribedTo`, profile. 
    ```
    {
    users {
@@ -176,11 +163,6 @@ If the properties of the entity are not specified, then return the id of it.
             birthday
             city
             country
-            memberType{
-               id
-               discount
-               monthPostsLimit
-            }
             street
             userId
          }
@@ -189,7 +171,60 @@ If the properties of the entity are not specified, then return the id of it.
    ```
 
    2.6. Get user by id with his `subscribedToUser`, posts.  
+   ```
+   query ($id: ID!) {
+    user(id: $id) {
+      id
+      firstName
+      subscribedToUser {
+         id
+         firstName
+        }
+      posts {id}
+    }
+   }
+   ```
+
+   ```
+   {
+    "id": "COPY FROM CREATED USER"
+   }
+   ```
+
    2.7. Get users with their `userSubscribedTo`, `subscribedToUser` (additionally for each user in `userSubscribedTo`, `subscribedToUser` add their `userSubscribedTo`, `subscribedToUser`).  
+   ```
+   query {
+    users {
+        id
+        firstName
+        userSubscribedTo {
+            id
+            firstName
+            userSubscribedTo {
+               id
+               firstName
+               }
+            subscribedToUser {
+               id
+               firstName
+               }
+        }
+        subscribedToUser  {
+            id
+            firstName
+            userSubscribedTo {
+               id
+               firstName
+               }
+            subscribedToUser {
+               id
+               firstName
+               }
+        }
+      }
+   }
+   ```
+
    * Create gql requests:   
    2.8. Create user.  
    ```
@@ -393,10 +428,18 @@ If the properties of the entity are not specified, then return the id of it.
             lastName
             email
             subscribedToUserIds
+        }
+        subscribedToUser { 
+            id
+            firstName
+            lastName
+            email
+            subscribedToUserIds
         }        
       }
    }
    ```
+   VARIABLES
 
    ```
    {
@@ -406,7 +449,28 @@ If the properties of the entity are not specified, then return the id of it.
 	   }
    }
    ```
-
+   unsubscribe from: 
+   ```
+   mutation unsubscribeFromUser($subscriber: unsubscribeFromType!) {
+    unsubscribeFromUser(subscriber: $subscriber) {
+        id
+        firstName
+        lastName
+        email
+        subscribedToUserIds
+        userSubscribedTo {id}
+      }
+   }
+   ```
+   VARIABLES
+   ```
+   {
+    "subscriber": {
+        "userId": "COPY FROM CREATED USER 1",
+        "unsubscriberId": "COPY FROM CREATED USER 2"
+    }
+   }
+   ```
 
    2.17. [InputObjectType](https://graphql.org/graphql-js/type/#graphqlinputobjecttype) for DTOs.  
 
