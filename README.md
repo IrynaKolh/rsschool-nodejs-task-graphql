@@ -2,6 +2,7 @@
 ### Tasks:
 1. Add logic to the restful endpoints (users, posts, profiles, member-types folders in ./src/routes).  
    1.1. npm run test - 100%  
+
 2. Add logic to the graphql endpoint (graphql folder in ./src/routes).  
 Constraints and logic for gql queries should be done based on restful implementation.  
 For each subtask provide an example of POST body in the PR.  
@@ -12,23 +13,481 @@ If the properties of the entity are not specified, then return the id of it.
    
    * Get gql requests:  
    2.1. Get users, profiles, posts, memberTypes - 4 operations in one query.  
-   2.2. Get user, profile, post, memberType by id - 4 operations in one query.  
+   ```
+   {
+    users {
+      id
+      firstName
+      lastName
+      email
+    }
+    profiles {
+      id
+      avatar
+      sex
+      birthday
+      country
+      street
+      city
+      userId
+      memberTypeId
+    }
+    posts {
+      id
+      title
+      content
+      userId
+    }
+    memberTypes {
+      id
+      discount
+      monthPostsLimit
+    }
+   }
+   ```
+
+   2.2. Get user, profile, post, memberType by id - 4 operations in one query. 
+   ```
+   query ($userId: ID!, $profileId: ID!, $postId: ID!, $memberTypeId: ID!) {
+      user(id: $userId) {
+         id
+         firstName
+         lastName
+         email
+      }
+
+      profile(id: $profileId) {
+         id
+         avatar
+         sex
+         birthday
+         country
+         street
+         city
+         userId
+         memberTypeId
+      }
+
+      post(id:  $postId) {
+         id
+         title
+         content
+         userId
+      }
+
+      memberType(id: $memberTypeId) {
+         id
+         discount
+         monthPostsLimit
+         }
+      }
+   ```
+   VARIABLES
+   ```
+   {
+    "userId": "COPY FROM CREATED USER",
+    "profileId": "COPY FROM CREATED PROFILE",
+    "postId": "COPY FROM CREATED POST",
+    "memberTypeId": "basic"
+   }
+   ```
+
    2.3. Get users with their posts, profiles, memberTypes.  
+   ```
+      {
+      users {
+         id
+         firstName
+         lastName
+         posts {
+            id
+            title
+            content
+         }
+         memberType{
+            id
+         }
+         profile{
+            id
+            avatar
+            sex
+            birthday
+            country
+            street
+            city
+            userId
+            memberTypeId
+         }
+      }
+   }
+   ```
+   VARIABLES
+   ```
+   {
+      "id": "COPY FROM CREATED USER"
+   }  
+   ```
+
    2.4. Get user by id with his posts, profile, memberType.  
-   2.5. Get users with their `userSubscribedTo`, profile.  
+   ```
+   { ($id: ID!)
+      user(id: $id) {        
+         firstName
+         lastName
+         posts {
+            id
+            title
+            content
+         }
+         memberType{
+            id
+         }
+         profile{
+            id
+            avatar
+            sex
+            birthday
+            country
+            street
+            city
+            userId
+            memberTypeId
+         }
+      }
+   }
+   ```
+   
+   2.5. Get users with their `userSubscribedTo`, profile. 
+   ```
+   {
+   users {
+      id
+      firstName
+      lastName
+      email
+      subscribedToUserIds
+      userSubscribedTo {
+            id
+            firstName
+            lastName
+            email
+            subscribedToUserIds
+      }
+      profile {
+            id
+            avatar
+            birthday
+            city
+            country
+            street
+            userId
+         }
+      }
+   }
+   ```
+
    2.6. Get user by id with his `subscribedToUser`, posts.  
+   ```
+   query ($id: ID!) {
+    user(id: $id) {
+      id
+      firstName
+      subscribedToUser {
+         id
+         firstName
+        }
+      posts {id}
+    }
+   }
+   ```
+
+   ```
+   {
+    "id": "COPY FROM CREATED USER"
+   }
+   ```
+
    2.7. Get users with their `userSubscribedTo`, `subscribedToUser` (additionally for each user in `userSubscribedTo`, `subscribedToUser` add their `userSubscribedTo`, `subscribedToUser`).  
+   ```
+   query {
+    users {
+        id
+        firstName
+        userSubscribedTo {
+            id
+            firstName
+            userSubscribedTo {
+               id
+               firstName
+               }
+            subscribedToUser {
+               id
+               firstName
+               }
+        }
+        subscribedToUser  {
+            id
+            firstName
+            userSubscribedTo {
+               id
+               firstName
+               }
+            subscribedToUser {
+               id
+               firstName
+               }
+        }
+      }
+   }
+   ```
+
    * Create gql requests:   
    2.8. Create user.  
+   ```
+   mutation CreateUser($user: CreateUserType!) {
+      createUser(user: $user) {
+         id,
+         firstName,
+         lastName,
+         email,
+         subscribedToUserIds
+      }
+   }
+   ```
+    create new user VARIABLES
+   ```
+   {
+    "user": {
+        "firstName": "ira",
+         "lastName": "ira",
+         "email": "ira@gmail.com"
+      }
+   }  
+   ```
+
    2.9. Create profile.  
+   ```
+   mutation createProfile($profile: CreateProfileType!){
+    createProfile(profile: $profile)
+    {
+        id
+        avatar
+        sex
+        birthday
+        country
+        street
+        city
+        memberTypeId
+        userId
+    }
+   }
+   ```
+   create new profle VARIABLES
+   ```
+   {
+    "profile": {
+      "avatar": "IronMan",
+      "sex": "men",
+      "birthday": 45,
+      "country": "USA",
+      "street": "5 Avenue",
+      "city": "NY",
+      "userId": "COPY FROM CREATED USER",   
+      "memberTypeId": "basic"
+      }
+   }
+   ```
+
    2.10. Create post.  
+   ```
+   mutation createPost($post: CreatePostType!){
+    createPost(post: $post)
+    {
+        id
+        title
+        content
+        userId
+    }
+   }
+   ```
+  create new post VARIABLES
+   ```
+   {
+	"post": {
+               "title": "ira",
+               "content": "post",
+               "userId": "COPY FROM CREATED USER"
+	   }
+   }
+   ```
+
    2.11. [InputObjectType](https://graphql.org/graphql-js/type/#graphqlinputobjecttype) for DTOs.  
+
+
    * Update gql requests:  
-   2.12. Update user.  
+   2.12. Update user.
+   ```
+   mutation updateUser($user: UpdateUserType!){
+    updateUser(user: $user)
+    {
+        id
+        firstName
+        lastName
+        email
+        subscribedToUserIds 
+    }
+   }
+   ```
+   update user VARIABLES
+   ```
+   {
+	   "user": {
+         "id": "COPY FROM CREATED USER",
+         "firstName": "ira new",
+         "lastName": "ira new",
+         "email": "ira@gmail.com"
+	   }
+   }
+   ```
+
    2.13. Update profile.  
+   ```
+   mutation updateProfile($profile: UpdateProfileType!){
+    updateProfile(profile: $profile)
+    {
+        id
+        avatar
+        sex
+        birthday
+        country
+        street
+        city
+        memberTypeId
+        userId
+    }
+   }
+   ```
+   update profile VARIABLES
+   ```
+   {
+	"profile": {
+              "id": "COPY FROM CREATED PROFILE",
+              "avatar": "Spider Man",
+              "sex": "men",
+              "birthday": 27,
+              "country": "USA",
+              "street": "Richmond",
+              "city": "Los Angeles",
+              "memberTypeId": "business",
+              "userId": "COPY FROM CREATED USER"
+	   }
+   }
+   ```
+
    2.14. Update post.  
+   ```
+   mutation updatePost($post: UpdatePostType!){
+    updatePost(post: $post)
+    {
+        id
+        title
+        content
+    }
+   }
+   ```
+   update post VARIABLES
+   ```
+   {
+	"post": {
+              "id": "COPY FROM CREATED POST",
+              "title": "Changed title",
+              "content": "Cahnged content."
+	   }
+   }
+   ```
+
    2.15. Update memberType.  
+   ```
+   mutation updateMember($member: UpdateMemberType!){
+    updateMember(member: $member)
+    {
+        id
+        discount
+        monthPostsLimit
+    }
+   }
+   ```
+   update memberType VARIABLES
+   ```
+   {
+	"member": {
+                "discount": 15,
+                "monthPostsLimit": 300,
+                "id": "business"
+	   }
+   }
+   ```
    2.16. Subscribe to; unsubscribe from.  
+
+   subscribe to:
+   ```
+   mutation userSubscribedTo($subscriber: userSubscribedToType!){
+    userSubscribedTo(subscriber: $subscriber) {
+        id
+        firstName
+        lastName
+        email
+        subscribedToUserIds
+        userSubscribedTo {
+            id
+            firstName
+            lastName
+            email
+            subscribedToUserIds
+        }
+        subscribedToUser { 
+            id
+            firstName
+            lastName
+            email
+            subscribedToUserIds
+        }        
+      }
+   }
+   ```
+   VARIABLES
+
+   ```
+   {
+	"subscriber": {
+              "userId": "COPY FROM CREATED USER 1",
+              "subscriberId": "COPY FROM CREATED USER 2"
+	   }
+   }
+   ```
+   unsubscribe from: 
+   ```
+   mutation unsubscribeFromUser($subscriber: unsubscribeFromType!) {
+    unsubscribeFromUser(subscriber: $subscriber) {
+        id
+        firstName
+        lastName
+        email
+        subscribedToUserIds
+        userSubscribedTo {id}
+      }
+   }
+   ```
+   VARIABLES
+   ```
+   {
+    "subscriber": {
+        "userId": "COPY FROM CREATED USER 1",
+        "unsubscriberId": "COPY FROM CREATED USER 2"
+    }
+   }
+   ```
+
    2.17. [InputObjectType](https://graphql.org/graphql-js/type/#graphqlinputobjecttype) for DTOs.  
 
 3. Solve `n+1` graphql problem with [dataloader](https://www.npmjs.com/package/dataloader) package in all places where it should be used.  
