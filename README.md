@@ -48,38 +48,47 @@ If the properties of the entity are not specified, then return the id of it.
 
    2.2. Get user, profile, post, memberType by id - 4 operations in one query. 
    ```
+   query ($userId: ID!, $profileId: ID!, $postId: ID!, $memberTypeId: ID!) {
+      user(id: $userId) {
+         id
+         firstName
+         lastName
+         email
+      }
+
+      profile(id: $profileId) {
+         id
+         avatar
+         sex
+         birthday
+         country
+         street
+         city
+         userId
+         memberTypeId
+      }
+
+      post(id:  $postId) {
+         id
+         title
+         content
+         userId
+      }
+
+      memberType(id: $memberTypeId) {
+         id
+         discount
+         monthPostsLimit
+         }
+      }
+   ```
+   VARIABLES
+   ```
    {
-   user(id: "COPY FROM CREATED USER") {
-      id
-      firstName
-      lastName
-      email
-   }
-
-   profile(id:  "COPY FROM CREATED PROFILE") {
-      id
-      avatar
-      sex
-      birthday
-      country
-      street
-      city
-      userId
-      memberTypeId
-   }
-
-   post(id:  "COPY FROM CREATED POST") {
-      id
-      title
-      content
-      userId
-   }
-
-   memberType(id: "basic") {
-      id
-      discount
-      monthPostsLimit
-   }
+    "userId": "COPY FROM CREATED USER",
+    "profileId": "COPY FROM CREATED PROFILE",
+    "postId": "COPY FROM CREATED POST",
+    "memberTypeId": "basic"
    }
    ```
 
@@ -112,10 +121,17 @@ If the properties of the entity are not specified, then return the id of it.
       }
    }
    ```
-   2.4. Get user by id with his posts, profile, memberType.  
+   VARIABLES
    ```
    {
-      user(id: "COPY FROM CREATED USER") {        
+      "id": "COPY FROM CREATED USER"
+   }  
+   ```
+
+   2.4. Get user by id with his posts, profile, memberType.  
+   ```
+   { ($id: ID!)
+      user(id: $id) {        
          firstName
          lastName
          posts {
