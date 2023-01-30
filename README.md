@@ -356,6 +356,26 @@ If the properties of the entity are not specified, then return the id of it.
    ```
 
    2.15. Update memberType.  
+   ```
+   mutation updateMember($member: UpdateMemberType!){
+    updateMember(member: $member)
+    {
+        id
+        discount
+        monthPostsLimit
+    }
+   }
+   ```
+   update memberType VARIABLES
+   ```
+   {
+	"member": {
+                "discount": 15,
+                "monthPostsLimit": 300,
+                "id": "business"
+	   }
+   }
+   ```
    2.16. Subscribe to; unsubscribe from.  
    2.17. [InputObjectType](https://graphql.org/graphql-js/type/#graphqlinputobjecttype) for DTOs.  
 

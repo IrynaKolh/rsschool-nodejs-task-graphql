@@ -169,3 +169,12 @@ export const UpdatePostType = new GraphQLInputObjectType({
     content: { type: new GraphQLNonNull(GraphQLString) }      
   })
 });
+
+export const UpdateMemberType = new GraphQLInputObjectType({
+  name: 'UpdateMemberType',
+  fields: () => ({
+    id: { type: new GraphQLNonNull(GraphQLID) },
+    discount: { type:  new GraphQLNonNull(GraphQLInt) },
+    monthPostsLimit: { type:  new GraphQLNonNull(GraphQLInt) }
+  })
+});

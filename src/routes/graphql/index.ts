@@ -7,7 +7,7 @@ import {
   GraphQLNonNull,
   GraphQLSchema,
 } from 'graphql/type';
-import { CreatePostType, CreateProfileType, CreateUserType, MemberType, PostType, ProfileType, UpdatePostType, UpdateProfileType, UpdateUserType, UserType } from './types';
+import { CreatePostType, CreateProfileType, CreateUserType, MemberType, PostType, ProfileType, UpdateMemberType, UpdatePostType, UpdateProfileType, UpdateUserType, UserType } from './types';
 import { graphql } from 'graphql';
 
 const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
@@ -153,6 +153,18 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
                 try {
                   const { id, ...body } = args.post;
                   return await fastify.db.posts.change(id, body);
+                } catch (err) {
+                  throw fastify.httpErrors.badRequest("Bad request!");
+                }
+              }
+            },
+            updateMember: {
+              type: MemberType,
+              args: {member: { type: new GraphQLNonNull(UpdateMemberType)}},
+              async resolve(parent, args) {
+                try {
+                  const { id, ...body } = args.member;
+                  return await fastify.db.memberTypes.change(id, body);
                 } catch (err) {
                   throw fastify.httpErrors.badRequest("Bad request!");
                 }
