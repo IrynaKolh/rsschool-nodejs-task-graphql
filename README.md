@@ -377,6 +377,37 @@ If the properties of the entity are not specified, then return the id of it.
    }
    ```
    2.16. Subscribe to; unsubscribe from.  
+
+   subscribe to:
+   ```
+   mutation userSubscribedTo($subscriber: userSubscribedToType!){
+    userSubscribedTo(subscriber: $subscriber) {
+        id
+        firstName
+        lastName
+        email
+        subscribedToUserIds
+        userSubscribedTo {
+            id
+            firstName
+            lastName
+            email
+            subscribedToUserIds
+        }        
+      }
+   }
+   ```
+
+   ```
+   {
+	"subscriber": {
+              "userId": "COPY FROM CREATED USER 1",
+              "subscriberId": "COPY FROM CREATED USER 2"
+	   }
+   }
+   ```
+
+
    2.17. [InputObjectType](https://graphql.org/graphql-js/type/#graphqlinputobjecttype) for DTOs.  
 
 3. Solve `n+1` graphql problem with [dataloader](https://www.npmjs.com/package/dataloader) package in all places where it should be used.  

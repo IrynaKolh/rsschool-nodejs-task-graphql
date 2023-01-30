@@ -44,7 +44,9 @@ export const ProfileType = new GraphQLObjectType({
   })
 });
 
-export const UserType = new GraphQLObjectType({
+export let UserType: GraphQLObjectType; //fix using UserType inside UserType
+
+UserType = new GraphQLObjectType({
   name: 'User',
   fields: () => ({
     id: { type: GraphQLID },
@@ -85,12 +87,12 @@ export const UserType = new GraphQLObjectType({
        }
     },
     subscribedToUserIds: { type: new GraphQLList(GraphQLID) },
-    // userSubscribedTo: {
-    //   type: new GraphQLList(GraphQLID),
-    //   async resolve(parent, args, fastify) {
-    //     return fastify.db.users.findMany({key: 'id', equals: parent.subscribedToUserIds});        
-    //   }
-    // },
+    userSubscribedTo: {
+      type: new GraphQLList(UserType),
+      async resolve(parent, args, fastify) {
+        return fastify.db.users.findMany({ key: 'subscribedToUserIds', inArray: parent.id });        
+      }
+    },
     // subscribedToUser: {
     //   type: new GraphQLList(GraphQLID),
     //   async resolve(parent, args, fastify) {
@@ -178,3 +180,11 @@ export const UpdateMemberType = new GraphQLInputObjectType({
     monthPostsLimit: { type:  new GraphQLNonNull(GraphQLInt) }
   })
 });
+
+export const  userSubscribedToType = new GraphQLInputObjectType({
+  name: 'userSubscribedToType',
+  fields: () => ({
+    userId: { type: new GraphQLNonNull(GraphQLID) },
+    subscriberId: { type: new GraphQLNonNull(GraphQLID)  },
+  })
+})

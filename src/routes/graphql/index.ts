@@ -7,7 +7,7 @@ import {
   GraphQLNonNull,
   GraphQLSchema,
 } from 'graphql/type';
-import { CreatePostType, CreateProfileType, CreateUserType, MemberType, PostType, ProfileType, UpdateMemberType, UpdatePostType, UpdateProfileType, UpdateUserType, UserType } from './types';
+import { CreatePostType, CreateProfileType, CreateUserType, MemberType, PostType, ProfileType, UpdateMemberType, UpdatePostType, UpdateProfileType, UpdateUserType, userSubscribedToType, UserType } from './types';
 import { graphql } from 'graphql';
 
 const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
@@ -166,6 +166,26 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
                   const { id, ...body } = args.member;
                   return await fastify.db.memberTypes.change(id, body);
                 } catch (err) {
+                  throw fastify.httpErrors.badRequest("Bad request!");
+                }
+              }
+            },
+            userSubscribedTo: {
+              type: UserType,
+              args: { subscriber: { type: userSubscribedToType }},
+              async resolve(parent, args) {
+                const { userId, subscriberId } = args.subscriber;
+                const user = await fastify.db.users.findOne({ key: 'id', equals: userId });
+                const subscriber = await fastify.db.users.findOne({ key: 'id', equals: subscriberId });
+                if (!user || !subscriber) {
+                  throw fastify.httpErrors.notFound("User or subscriber not found!");
+                }
+                try {
+                  await fastify.db.users.change(user.id, {
+                    subscribedToUserIds: [...user.subscribedToUserIds, subscriber.id]
+                  })
+                  return user;
+                } catch (error) {
                   throw fastify.httpErrors.badRequest("Bad request!");
                 }
               }
